@@ -1,0 +1,15 @@
+version: '3.8'
+
+services:
+  web:
+    build: .
+    ports:
+      - "8000:8000"
+    environment:
+      - SECRET_KEY=${SECRET_KEY:-demo-secret-key}
+      - ALGORITHM=${ALGORITHM:-HS256}
+      - DATABASE_URL=${DATABASE_URL:-sqlite:///./test.db}
+      - JWT_SECRET_KEY=${JWT_SECRET_KEY:-demo-jwt-secret}
+    volumes:
+      - ./app:/app
+    restart: unless-stopped

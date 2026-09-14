@@ -39,9 +39,22 @@ JWT_SECRET_KEY=your-jwt-secret-key-here
 
 ## Usage
 
+### Local Development
 Start the server:
 ```bash
 uvicorn main:app --reload
+```
+
+### Docker Usage
+Build and run with Docker:
+```bash
+docker build -t fastapi-auth .
+docker run -p 8000:8000 -e SECRET_KEY=your-secret -e JWT_SECRET_KEY=your-jwt-secret fastapi-auth
+```
+
+Or use docker-compose:
+```bash
+docker-compose up --build
 ```
 
 ## API Endpoints
