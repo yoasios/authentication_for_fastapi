@@ -5,9 +5,15 @@ from modals import User
 from schemas import inputs
 from jose import jwt, JWTError
 from passlib.context import CryptContext
+from dotenv import load_dotenv
+import os
 import datetime
 import hashlib
 
+load_dotenv()
+
+JWT_SECRET_KEY = os.getenv("JWT_SECRET_KEY")
+ALGORITHM = os.getenv("ALGORITHM", "HS256")
 
 app = FastAPI()
 
@@ -21,7 +27,7 @@ def user_name(email: str, password: str, response: Response, access_token: str =
     # Check if user already has valid token
     if access_token:
         try:
-            payload = jwt.decode(access_token, "secret_key", algorithms=["HS256"])
+            payload = jwt.decode(access_token, JWT_SECRET_KEY, algorithms=[ALGORITHM])
             return {"message": "Already logged in", "user_id": payload.get("user_id")}
         except JWTError:
             pass  # Token invalid, proceed with login
@@ -35,8 +41,8 @@ def user_name(email: str, password: str, response: Response, access_token: str =
         jwt_token = jwt.encode(
             {"user_id": users.id,
             "exp": datetime.datetime.utcnow() + datetime.timedelta(minutes=30)},
-            "secret_key",
-            algorithm="HS256"
+            JWT_SECRET_KEY,
+            algorithm=ALGORITHM
         )
         response.set_cookie(
             key="access_token",
@@ -52,7 +58,7 @@ def create_user(userl: inputs, response: Response, access_token: str = Cookie(No
     # Check if user already has valid token
     if access_token:
         try:
-            payload = jwt.decode(access_token, "secret_key", algorithms=["HS256"])
+            payload = jwt.decode(access_token, JWT_SECRET_KEY, algorithms=[ALGORITHM])
             return {"message": "Already logged in", "user_id": payload.get("user_id")}
         except JWTError:
             pass  # Token invalid, proceed with registration
@@ -64,8 +70,8 @@ def create_user(userl: inputs, response: Response, access_token: str = Cookie(No
     jwt_token = jwt.encode(
         {"user_id": new_user.id,
         "exp": datetime.datetime.utcnow() + datetime.timedelta(minutes=30)},
-        "secret_key",
-        algorithm="HS256"
+        JWT_SECRET_KEY,
+        algorithm=ALGORITHM
     )
     response.set_cookie(
         key="access_token",
@@ -86,8 +92,8 @@ def protected_route(access_token: str = Cookie(None) , db: Session = Depends(get
     try:
         payload = jwt.decode(
             access_token,
-            "secret_key",
-            algorithms=["HS256"]
+            JWT_SECRET_KEY,
+            algorithms=[ALGORITHM]
         )
 
         return {

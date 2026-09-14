@@ -33,6 +33,8 @@ pip install fastapi uvicorn sqlalchemy passlib[bcrypt] python-jose[cryptography]
 ```
 SECRET_KEY=your-secret-key-here
 ALGORITHM=HS256
+DATABASE_URL=sqlite:///./test.db
+JWT_SECRET_KEY=your-jwt-secret-key-here
 ```
 
 ## Usage
